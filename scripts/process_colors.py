@@ -44,7 +44,7 @@ with open(input_file, 'r', newline='', encoding='utf-8') as infile, \
             colors_list = []
         
         # Store the cleaned colors as a string representation of a list
-        new_row['colors'] = str(colors_list)
+        new_row['colors'] = ', '.join(colors_list)
         
         # Write the cleaned row with only the desired columns
         writer.writerow(new_row)

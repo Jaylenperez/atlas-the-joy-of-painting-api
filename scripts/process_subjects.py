@@ -44,15 +44,16 @@ with open(input_file, newline='', encoding='utf-8') as infile, \
                 continue
             if value.strip() == '1' and 'FRAME' not in key.upper():
                 # Convert the column name to a more readable form
-                # (e.g., "BUSHES" becomes "Bushes", "DECIDUOUS" becomes "Deciduous")
                 subjects.append(key.title())
+        
+        subject_str = ', '.join(subjects)
 
         new_row = {
             'id': id_counter,
             'title': title,
             'season': season,
             'episode': episode,
-            'subject': str(subjects)  # Stored as a string representation of a list
+            'subject': subject_str
         }
         writer.writerow(new_row)
         id_counter += 1

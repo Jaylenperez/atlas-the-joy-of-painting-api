@@ -6,7 +6,7 @@ from datetime import datetime
 
 # Converts txt to csv
 input_file = 'episode_dates.txt'
-output_file = 'episode_dates.csv'
+output_file = 'processed_episode_dates.csv'
 
 with open(input_file, 'r') as infile, open(output_file, 'w', newline='') as outfile:
     writer = csv.writer(outfile)
