@@ -4,7 +4,6 @@ import csv
 import re
 from datetime import datetime
 
-# Converts txt to csv
 input_file = 'episode_dates.txt'
 output_file = 'processed_episode_dates.csv'
 

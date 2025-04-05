@@ -3,7 +3,6 @@
 import csv
 import ast
 
-# Update these paths according to your repo structure:
 input_file = 'colors_used.csv'
 output_file = 'processed_colors_used.csv'
 
@@ -15,7 +14,6 @@ with open(input_file, 'r', newline='', encoding='utf-8') as infile, \
     reader = csv.DictReader(infile)
     writer = csv.DictWriter(outfile, fieldnames=fieldnames)
     
-    # Write the new header row
     writer.writeheader()
 
     for row in reader:
