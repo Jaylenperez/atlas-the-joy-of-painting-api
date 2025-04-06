@@ -3,7 +3,7 @@ import csv
 colors_file = 'processed_colors_used.csv'
 episode_dates_file = 'processed_episode_dates.csv'
 subjects_file = 'processed_subjects.csv'
-output_file = 'clean_data.csv'
+output_file = 'merged_data.csv'
 
 # Read processed_colors_used.csv into a dict keyed by id
 colors_data = {}
@@ -30,13 +30,16 @@ with open(subjects_file, newline='', encoding='utf-8') as sf:
 all_ids = set(colors_data.keys()) | set(episode_data.keys()) | set(subjects_data.keys())
 
 # Define the output column order
-output_fieldnames = ['id', 'title', 'season', 'episode', 'air_date', 'subject', 'colors', 'img_src', 'youtube_src', 'notes']
+output_fieldnames = [
+    'id', 'title', 'season', 'episode', 'air_date', 'year', 'month',
+    'subject', 'colors', 'color_hex', 'img_src', 'youtube_src', 'notes'
+]
 
 with open(output_file, 'w', newline='', encoding='utf-8') as outf:
     writer = csv.DictWriter(outf, fieldnames=output_fieldnames)
     writer.writeheader()
 
-    # Sort IDs numerically if possible (they are assumed to be numbers)
+    # Sort IDs numerically if possible
     for id_key in sorted(all_ids, key=lambda x: int(x)):
         # Get rows from each file; use empty dict if a row is missing
         color_row = colors_data.get(id_key, {})
@@ -50,15 +53,18 @@ with open(output_file, 'w', newline='', encoding='utf-8') as outf:
         season = color_row.get('season') or subject_row.get('season', '')
         episode = color_row.get('episode') or subject_row.get('episode', '')
 
-        # air_date and notes come from the episode dates file
+        # air_date, year, month, and notes come from the episode dates file
         air_date = episode_row.get('air_date', '')
+        year = episode_row.get('year', '')
+        month = episode_row.get('month', '')
         notes = episode_row.get('notes', '')
 
-        # subject from the subjects file
+        # subject comes from the subjects file
         subject = subject_row.get('subject', '')
 
-        # colors, img_src, and youtube_src from the colors file
+        # colors, color_hex, img_src, and youtube_src come from the colors file
         colors = color_row.get('colors', '')
+        color_hex = color_row.get('color_hex', '')
         img_src = color_row.get('img_src', '')
         youtube_src = color_row.get('youtube_src', '')
 
@@ -69,8 +75,11 @@ with open(output_file, 'w', newline='', encoding='utf-8') as outf:
             'season': season,
             'episode': episode,
             'air_date': air_date,
+            'year': year,
+            'month': month,
             'subject': subject,
             'colors': colors,
+            'color_hex': color_hex,
             'img_src': img_src,
             'youtube_src': youtube_src,
             'notes': notes
