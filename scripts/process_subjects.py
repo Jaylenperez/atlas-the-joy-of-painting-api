@@ -17,22 +17,12 @@ with open(input_file, newline='', encoding='utf-8') as infile, \
 
     reader = csv.DictReader(infile)
     # Our new CSV will have these columns:
-    fieldnames = ['id', 'title', 'season', 'episode', 'subject']
+    fieldnames = ['id', 'title', 'subject']
     writer = csv.DictWriter(outfile, fieldnames=fieldnames)
     writer.writeheader()
 
     id_counter = 1
     for row in reader:
-        # Process the EPISODE column (e.g., "S01E01")
-        ep_str = row['EPISODE']
-        match = re.match(r'S(\d+)E(\d+)', ep_str, re.IGNORECASE)
-        if match:
-            # Remove any leading zeros
-            season = str(int(match.group(1)))
-            episode = str(int(match.group(2)))
-        else:
-            season, episode = '', ''
-
         # Clean up the TITLE column
         title = clean_title(row['TITLE'])
 
@@ -43,7 +33,6 @@ with open(input_file, newline='', encoding='utf-8') as infile, \
             if key in ['EPISODE', 'TITLE']:
                 continue
             if value.strip() == '1' and 'FRAME' not in key.upper():
-                # Convert the column name to a more readable form
                 subjects.append(key.title())
         
         subject_str = ', '.join(subjects)
@@ -51,8 +40,6 @@ with open(input_file, newline='', encoding='utf-8') as infile, \
         new_row = {
             'id': id_counter,
             'title': title,
-            'season': season,
-            'episode': episode,
             'subject': subject_str
         }
         writer.writerow(new_row)
