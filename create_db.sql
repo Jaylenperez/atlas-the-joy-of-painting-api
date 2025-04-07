@@ -1,28 +1,32 @@
 -- Create Episode Table
 CREATE TABLE episodes (
-    episode_id SERIAL PRIMARY KEY,
-    -- INT -> +1
-    title VARCHAR(255) NOT NULL,
-    season INT NOT NULL,
-    episode_number INT NOT NULL,
-    youtube_src VARCHAR(255),
+    id INT PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
     air_date DATE,
-    img_src VARCHAR(255)
+    year INT NOT NULL,
+    month VARCHAR(50) NOT NULL,
+    notes VARCHAR(50)
 );
 -- Create Colors Table
 CREATE TABLE colors (
-    color_id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL UNIQUE,
-    hex_value VARCHAR(7) NOT NULL UNIQUE
+    id PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    season INT NOT NULL,
+    episode INT NOT NULL,
+    img_src TEXT,
+    youtube_src TEXT,
+    colors TEXT [],
+    color_hex TEXT []
 );
 -- Create Subjects Table
 CREATE TABLE subjects (
     subject_id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE
+    title VARCHAR(100) NOT NULL,
+    subject TEXT []
 );
 -- Create Episodes & Colors Join Table
 CREATE TABLE episode_colors (
-    episode_color_id SERIAL PRIMARY KEY,
+    episode_color_id PRIMARY KEY,
     episode_id INT NOT NULL,
     color_id INT NOT NULL,
     FOREIGN KEY (episode_id) REFERENCES episodes(episode_id),
