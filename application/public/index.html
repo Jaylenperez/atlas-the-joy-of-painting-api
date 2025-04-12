@@ -37,29 +37,8 @@
           </div>
           <div>
             <h4>Subjects</h4>
-                <form id="checkboxForm">
-                <!-- Checkbox Option 1 -->
-                <div class="checkbox-option">
-                    <input type="checkbox" id="option1" name="filterOptions" value="option1">
-                    <label for="option1">Option 1</label>
-                </div>
-                <!-- Checkbox Option 2 -->
-                <div class="checkbox-option">
-                    <input type="checkbox" id="option2" name="filterOptions" value="option2">
-                    <label for="option2">Option 2</label>
-                </div>
-                <!-- Checkbox Option 3 -->
-                <div class="checkbox-option">
-                    <input type="checkbox" id="option3" name="filterOptions" value="option3">
-                    <label for="option3">Option 3</label>
-                </div>
-                <!-- Checkbox Option 4 -->
-                <div class="checkbox-option">
-                    <input type="checkbox" id="option4" name="filterOptions" value="option4">
-                    <label for="option4">Option 4</label>
-                </div>
-                </form>
-            </div>
+              <div id="subjectsContainer">
+          </div>
             <div>
                 <h4>Colors</h4>
                 <form id="checkboxForm">
@@ -156,6 +135,53 @@
   } catch (error) {
     console.error("Error fetching seasons:", error);
   }
+
+  // fetch subjects
+  try {
+      // Fetch subjects from the endpoint
+      const response = await fetch('/api/subjects/subject');
+      if (!response.ok) {
+        throw new Error('Network response was not ok for subjects endpoint');
+      }
+      const result = await response.json();
+      const subjects = result.data; // Expecting an array of subjects (unique subject strings)
+      
+      // Get the container where the checkboxes should be added
+      const subjectsContainer = document.getElementById("subjectsContainer");
+      
+      // Clear any existing content (optional)
+      subjectsContainer.innerHTML = "";
+      
+      // Iterate over the subjects array and create a checkbox for each subject
+      subjects.forEach(subject => {
+        // Create a container div for the individual checkbox option
+        const optionDiv = document.createElement("div");
+        optionDiv.classList.add("checkbox-option");
+        
+        // Create the checkbox input
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        // Using the subject string as the id may cause issues if it has spaces or special characters.
+        // You can replace spaces with underscores or create a unique id in another way:
+        checkbox.id = 'sub_' + subject.replace(/\s+/g, '_');
+        checkbox.name = "filterOptions";
+        checkbox.value = subject;
+        
+        // Create the label
+        const label = document.createElement("label");
+        label.htmlFor = checkbox.id;
+        label.textContent = subject;
+        
+        // Append the checkbox and label to the div
+        optionDiv.appendChild(checkbox);
+        optionDiv.appendChild(label);
+        
+        // Append the new div to the container
+        subjectsContainer.appendChild(optionDiv);
+      });
+    } catch (error) {
+      console.error("Error fetching subjects:", error);
+    }
   });
 </script>
 </body>

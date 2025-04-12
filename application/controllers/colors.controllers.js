@@ -13,4 +13,6 @@ const getSeasons = async (req, res, next) => {
     }
 };
 
-module.exports = { getSeasons };
+// when u get home add this function!!!!
+
+module.exports = { getSeasons, getColors };
