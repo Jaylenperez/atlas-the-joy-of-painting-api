@@ -26,18 +26,6 @@
             <label for="monthFilter">Month:</label>
             <select id="monthFilter" name="month">
               <option value="">Select Month</option>
-              <option value="January">January</option>
-              <option value="February">February</option>
-              <option value="March">March</option>
-              <option value="April">April</option>
-              <option value="May">May</option>
-              <option value="June">June</option>
-              <option value="July">July</option>
-              <option value="August">August</option>
-              <option value="September">September</option>
-              <option value="October">October</option>
-              <option value="November">November</option>
-              <option value="December">December</option>
             </select>
           </div>
           <!-- Season Filter -->
@@ -157,6 +145,27 @@
       });
     } catch (error) {
       console.error("Error fetching years:", error);
+    }
+
+    // Fetch and populate months
+    try {
+      const responseMonths = await fetch('/api/episodes/months');
+      if (!responseMonths.ok) {
+        throw new Error('Network response was not ok for months endpoint');
+      }
+      const resultMonths = await responseMonths.json();
+      const months = resultMonths.data;
+      const monthFilter = document.getElementById('monthFilter');
+
+      // Create option elements for each month from the endpoint
+      months.forEach(item => {
+        const option = document.createElement("option");
+        option.value = item.month;
+        option.textContent = item.month;
+        monthFilter.appendChild(option);
+      });
+    } catch (error) {
+      console.error("Error fetching months:", error);
     }
   });
 </script>
