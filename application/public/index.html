@@ -41,28 +41,7 @@
           </div>
             <div>
                 <h4>Colors</h4>
-                <form id="checkboxForm">
-                <!-- Checkbox Option 1 -->
-                <div class="checkbox-option">
-                    <input type="checkbox" id="option1" name="filterOptions" value="option1">
-                    <label for="option1">Option 1</label>
-                </div>
-                <!-- Checkbox Option 2 -->
-                <div class="checkbox-option">
-                    <input type="checkbox" id="option2" name="filterOptions" value="option2">
-                    <label for="option2">Option 2</label>
-                </div>
-                <!-- Checkbox Option 3 -->
-                <div class="checkbox-option">
-                    <input type="checkbox" id="option3" name="filterOptions" value="option3">
-                    <label for="option3">Option 3</label>
-                </div>
-                <!-- Checkbox Option 4 -->
-                <div class="checkbox-option">
-                    <input type="checkbox" id="option4" name="filterOptions" value="option4">
-                    <label for="option4">Option 4</label>
-                </div>
-                </form>
+                <div id="colorsContainer"></div>
             </div>
             <div>
                 <button>Search</button>
@@ -181,6 +160,51 @@
       });
     } catch (error) {
       console.error("Error fetching subjects:", error);
+    }
+
+    // fetch colors data
+    try {
+      const responseColors = await fetch('/api/colors/colors');
+      if (!responseColors.ok) {
+        throw new Error('Network response was not ok for colors endpoint');
+      }
+      const resultColors = await responseColors.json();
+      const colors = resultColors.data; // Expects an array of color strings, e.g., ["Alizarin Crimson", "Bright Red", ...]
+      
+      // Get the container for the color checkboxes
+      const colorsContainer = document.getElementById("colorsContainer");
+      
+      // Clear existing content, if any
+      colorsContainer.innerHTML = "";
+      
+      // For each color, create a checkbox with a label
+      colors.forEach(color => {
+        // Create a div for the individual checkbox
+        const optionDiv = document.createElement("div");
+        optionDiv.classList.add("checkbox-option");
+        
+        // Create the checkbox input
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        // Create a unique id by replacing spaces in the color name with underscores
+        checkbox.id = 'color_' + color.replace(/\s+/g, '_');
+        checkbox.name = "filterColors"; // Use a relevant name for colors
+        checkbox.value = color;
+        
+        // Create the label for the checkbox
+        const label = document.createElement("label");
+        label.htmlFor = checkbox.id;
+        label.textContent = color;
+        
+        // Append the checkbox and label to the container div
+        optionDiv.appendChild(checkbox);
+        optionDiv.appendChild(label);
+        
+        // Append the div to the colors container
+        colorsContainer.appendChild(optionDiv);
+      });
+    } catch (error) {
+      console.error("Error fetching colors:", error);
     }
   });
 </script>
