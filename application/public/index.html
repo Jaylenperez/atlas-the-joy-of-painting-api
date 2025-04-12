@@ -19,11 +19,6 @@
             <label for="yearFilter">Year:</label>
             <select id="yearFilter" name="year">
               <option value="">Select Year</option>
-              <!-- Add or update year options as needed -->
-              <option value="2025">2025</option>
-              <option value="2024">2024</option>
-              <option value="2023">2023</option>
-              <option value="2022">2022</option>
             </select>
           </div>
           <!-- Month Filter -->
@@ -133,7 +128,31 @@
                 </div>
                 </form>
             </div>
+            <div>
+                <button>Search</button>
+            </div>
       </section>
 </main>
+
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    try {
+      const response = await fetch('/api/episodes/years');
+      if (!response.ok) {
+        throw new Error("Error fetching years data");
+      }
+      const result = await response.json();
+      const yearFilter = document.getElementById("yearFilter");
+      result.data.forEach(row => {
+        const option = document.createElement("option");
+        option.value = row.year;
+        option.textContent = row.year;
+        yearFilter.appendChild(option);
+      });
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  });
+</script>
 </body>
 </html>
