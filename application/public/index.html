@@ -135,22 +135,28 @@
 </main>
 
 <script>
+  // Wait for the DOM content to load
   document.addEventListener("DOMContentLoaded", async () => {
     try {
+      // Make a GET request to your endpoint
       const response = await fetch('/api/episodes/years');
       if (!response.ok) {
-        throw new Error("Error fetching years data");
+        throw new Error('Network response was not ok');
       }
+      // Parse the response as JSON
       const result = await response.json();
+      const years = result.data; // Expecting data as an array of objects, e.g., [{ "year": 1983 }, { "year": 1984 }, ...]
       const yearFilter = document.getElementById("yearFilter");
-      result.data.forEach(row => {
+
+      // Loop through the years and create option elements
+      years.forEach(item => {
         const option = document.createElement("option");
-        option.value = row.year;
-        option.textContent = row.year;
+        option.value = item.year;
+        option.textContent = item.year;
         yearFilter.appendChild(option);
       });
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error fetching years:", error);
     }
   });
 </script>
