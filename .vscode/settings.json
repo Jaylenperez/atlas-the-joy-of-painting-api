@@ -1,0 +1,15 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "172.17.32.1",
+            "port": 5432,
+            "askForPassword": true,
+            "driver": "PostgreSQL",
+            "name": "LOCAL",
+            "database": "atlas_the_joy_of_painting_api",
+            "username": "postgres",
+            "connectionTimeout": 30
+        }
+    ]
+}
