@@ -4,31 +4,20 @@
   <meta charset="UTF-8" />
   <title>Bob Ross Episode Search</title>
   <link rel="stylesheet" href="styles.css">
-  <style>
-    body { font-family: Arial, sans-serif; padding: 2rem; }
-    .episode { border: 1px solid #ccc; margin-bottom: 1rem; padding: 1rem; }
-    .filter-group { margin-top: 1rem; }
-    .filter-options {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem 1rem;
-      margin-top: 0.5rem;
-    }
-    .filter-options label {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-  </style>
 </head>
-<h1>Search Bob Ross Episodes</h1>
+<!-- Header Title -->
+<header>
+  <h1>Search Bob Ross Episodes</h1>
+</header>
 <body>
 
   <!-- Search Bar -->
-  <label>
-    Search by Title:
-    <input type="text" id="titleInput" placeholder="e.g. A Walk in the Woods" />
-  </label>
+   <div class="search-bar-container">
+    <label>
+      Search by Title:
+      <input type="text" id="titleInput" placeholder="e.g. A Walk in the Woods" style="width: 325px;" />
+    </label>
+   </div>
 
   <!-- Filter by Subject -->
   <div class="filter-group">
@@ -42,34 +31,42 @@
     <div id="colorFilters" class="filter-options"></div>
   </div>
 
-  <!-- Search Button -->
+  <!-- Search Button (triggers episode filtering logic) -->
   <button onclick="filterEpisodes()">Search</button>
 
+  <!-- Section where filtered episode results will be shown -->
   <div id="results" style="margin-top: 2rem;"></div>
 
+  <!-- Pagination (6 episodes per page) -->
   <div id="pagination" style="margin-top: 1rem;"></div>
 
+  <!-- JavaScript logic for data fetching, filtering, and rendering -->
   <script>
-  let episodes = [];
-  let filteredResults = [];
-  let currentPage = 1;
-  const resultsPerPage = 6;
+  let episodes = []; // stores all episodes loaded from data.json
+  let filteredResults = []; // stores only filtered episodes based on user input
+  let currentPage = 1; // tracks the current page number for pagination
+  const resultsPerPage = 6; // number of results to show per page
 
+  // Loads JSON data containing all episodes from a local file
   async function loadData() {
-    const res = await fetch('data.json');
-    episodes = await res.json();
-    populateFilters();
+    const res = await fetch('data.json'); // Fetches the JSON file
+    episodes = await res.json();          // Parses the JSON into JS array
+    populateFilters();                    // Builds subject and color filter options
   }
 
+  // Creates checkboxes dynamically for all unique subjects and colors found in the data
   function populateFilters() {
-    const subjectSet = new Set();
-    const colorSet = new Set();
+    const subjectSet = new Set(); // to store unique subjects
+    const colorSet = new Set();   // to store unique colors
 
     episodes.forEach(ep => {
+      // Splits and trims each subject, then adds to the set
       ep.subject.split(',').forEach(s => {
         const trimmed = s.trim();
         if (trimmed) subjectSet.add(trimmed);
       });
+
+      // Splits and trims each color, then adds to the set
       ep.colors.split(',').forEach(c => {
         const trimmed = c.trim();
         if (trimmed) colorSet.add(trimmed);
@@ -79,6 +76,7 @@
     const subjectFilters = document.getElementById('subjectFilters');
     const colorFilters = document.getElementById('colorFilters');
 
+    // Creates checkboxes for all subjects in ABC order
     [...subjectSet].sort().forEach(subject => {
       const label = document.createElement('label');
       label.innerHTML = `
@@ -88,6 +86,7 @@
       subjectFilters.appendChild(label);
     });
 
+    // Creates checkboxes for all colors in ABC order
     [...colorSet].sort().forEach(color => {
       const label = document.createElement('label');
       label.innerHTML = `
@@ -98,43 +97,52 @@
     });
   }
 
+  // Filters the episodes based on search input and selected filters
   function filterEpisodes() {
     const titleQuery = document.getElementById('titleInput').value.toLowerCase();
+
+    // Collects all selected subject and color values
     const selectedSubjects = Array.from(document.querySelectorAll('input[name="subject"]:checked')).map(cb => cb.value);
     const selectedColors = Array.from(document.querySelectorAll('input[name="color"]:checked')).map(cb => cb.value);
 
+    // Filters episodes based on title, subjects, and colors
     filteredResults = episodes.filter(ep => {
       const matchTitle = !titleQuery || ep.title.toLowerCase().includes(titleQuery);
 
       const subjectList = ep.subject.split(',').map(s => s.trim());
       const colorList = ep.colors.split(',').map(c => c.trim());
 
+      // Checks if all selected subjects and colors are included in the episode
       const matchSubject = selectedSubjects.every(s => subjectList.includes(s));
       const matchColor = selectedColors.every(c => colorList.includes(c));
 
       return matchTitle && matchSubject && matchColor;
   });
 
-  currentPage = 1; // reset to first page
+  // Reset to first page and display results
+  currentPage = 1;
   displayResults();
   displayPagination();
 }
 
-
+  // Displays current page of filtered results
   function displayResults() {
     const container = document.getElementById('results');
     container.innerHTML = '';
 
+    // If no results found, show message and remove pagination
     if (filteredResults.length === 0) {
       container.textContent = 'No matching episodes found.';
       document.getElementById('pagination').innerHTML = '';
       return;
     }
 
+    // Calculates which results to display based on current page
     const start = (currentPage - 1) * resultsPerPage;
     const end = start + resultsPerPage;
     const currentPageResults = filteredResults.slice(start, end);
 
+    // Renders each episode as a styled block
     currentPageResults.forEach(ep => {
       const div = document.createElement('div');
       div.className = 'episode';
@@ -150,36 +158,41 @@
     });
   }
 
+  // Builds previous/next buttons and handles pagination display
   function displayPagination() {
     const pagination = document.getElementById('pagination');
     pagination.innerHTML = '';
 
     const totalPages = Math.ceil(filteredResults.length / resultsPerPage);
-    if (totalPages <= 1) return;
+    if (totalPages <= 1) return; // Don't show pagination if only one page
 
+    // Creates 'Previous' button
     const prevBtn = document.createElement('button');
     prevBtn.textContent = 'Previous';
-    prevBtn.disabled = currentPage === 1;
+    prevBtn.disabled = currentPage === 1; // Disable if on first page
     prevBtn.onclick = () => {
       currentPage--;
       displayResults();
       displayPagination();
     };
 
+    // Creates 'Next' button
     const nextBtn = document.createElement('button');
     nextBtn.textContent = 'Next';
-    nextBtn.disabled = currentPage === totalPages;
+    nextBtn.disabled = currentPage === totalPages; // Disable if on last page
     nextBtn.onclick = () => {
       currentPage++;
       displayResults();
       displayPagination();
     };
 
+    // Append pagination controls
     pagination.appendChild(prevBtn);
     pagination.appendChild(document.createTextNode(` Page ${currentPage} of ${totalPages} `));
     pagination.appendChild(nextBtn);
   }
 
+  // Loads episode data as soon as the script runs
   loadData();
 </script>
 

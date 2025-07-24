@@ -1,18 +1,47 @@
 @font-face {
-    font-family: 'MyCustomFont'; /* Give your font a name you'll use in CSS */
-    src: url('fonts/Pinklatte.ttf') format('truetype'); /* Path to your font file and its format */
-    font-weight: normal; /* Or bold, semi-bold, etc., depending on your font */
-    font-style: normal; /* Or italic, oblique */
-    /* You can add more descriptors like font-display: swap; for better performance */
+    font-family: 'MyCustomFont';
+    src: url('fonts/Pinklatte.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
 }
 
 h1 {
-    font-family: 'MyCustomFont', serif; /* You can apply it to specific elements as well */
+    font-family: 'MyCustomFont', serif;
     color: #A41338;
     font-size: 50px;
     text-align: center;
 }
 
 body {
+    font-family: Arial, sans-serif;
+    padding: 2rem;
     color: #819263;
+}
+
+.search-bar-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.episode { 
+    border: 1px solid #ccc;
+    margin-bottom: 1rem;
+    padding: 1rem;
+}
+
+.filter-group {
+    margin-top: 1rem;
+}
+
+.filter-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    margin-top: 0.5rem;
+}
+ .filter-options label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
 }
