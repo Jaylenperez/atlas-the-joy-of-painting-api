@@ -104,15 +104,21 @@
 
     filteredResults = episodes.filter(ep => {
       const matchTitle = !titleQuery || ep.title.toLowerCase().includes(titleQuery);
-      const matchSubject = selectedSubjects.length === 0 || selectedSubjects.some(s => ep.subject.includes(s));
-      const matchColor = selectedColors.length === 0 || selectedColors.some(c => ep.colors.includes(c));
-      return matchTitle && matchSubject && matchColor;
-    });
 
-    currentPage = 1; // reset to first page
-    displayResults();
-    displayPagination();
-  }
+      const subjectList = ep.subject.split(',').map(s => s.trim());
+      const colorList = ep.colors.split(',').map(c => c.trim());
+
+      const matchSubject = selectedSubjects.every(s => subjectList.includes(s));
+      const matchColor = selectedColors.every(c => colorList.includes(c));
+
+      return matchTitle && matchSubject && matchColor;
+  });
+
+  currentPage = 1; // reset to first page
+  displayResults();
+  displayPagination();
+}
+
 
   function displayResults() {
     const container = document.getElementById('results');
