@@ -46,90 +46,135 @@
 
   <div id="results" style="margin-top: 2rem;"></div>
 
+  <div id="pagination" style="margin-top: 1rem;"></div>
+
   <script>
-    let episodes = [];
+  let episodes = [];
+  let filteredResults = [];
+  let currentPage = 1;
+  const resultsPerPage = 6;
 
-    async function loadData() {
-      const res = await fetch('data.json');
-      episodes = await res.json();
-      populateFilters();
+  async function loadData() {
+    const res = await fetch('data.json');
+    episodes = await res.json();
+    populateFilters();
+  }
+
+  function populateFilters() {
+    const subjectSet = new Set();
+    const colorSet = new Set();
+
+    episodes.forEach(ep => {
+      ep.subject.split(',').forEach(s => {
+        const trimmed = s.trim();
+        if (trimmed) subjectSet.add(trimmed);
+      });
+      ep.colors.split(',').forEach(c => {
+        const trimmed = c.trim();
+        if (trimmed) colorSet.add(trimmed);
+      });
+    });
+
+    const subjectFilters = document.getElementById('subjectFilters');
+    const colorFilters = document.getElementById('colorFilters');
+
+    [...subjectSet].sort().forEach(subject => {
+      const label = document.createElement('label');
+      label.innerHTML = `
+        <input type="checkbox" name="subject" value="${subject}" />
+        ${subject}
+      `;
+      subjectFilters.appendChild(label);
+    });
+
+    [...colorSet].sort().forEach(color => {
+      const label = document.createElement('label');
+      label.innerHTML = `
+        <input type="checkbox" name="color" value="${color}" />
+        ${color}
+      `;
+      colorFilters.appendChild(label);
+    });
+  }
+
+  function filterEpisodes() {
+    const titleQuery = document.getElementById('titleInput').value.toLowerCase();
+    const selectedSubjects = Array.from(document.querySelectorAll('input[name="subject"]:checked')).map(cb => cb.value);
+    const selectedColors = Array.from(document.querySelectorAll('input[name="color"]:checked')).map(cb => cb.value);
+
+    filteredResults = episodes.filter(ep => {
+      const matchTitle = !titleQuery || ep.title.toLowerCase().includes(titleQuery);
+      const matchSubject = selectedSubjects.length === 0 || selectedSubjects.some(s => ep.subject.includes(s));
+      const matchColor = selectedColors.length === 0 || selectedColors.some(c => ep.colors.includes(c));
+      return matchTitle && matchSubject && matchColor;
+    });
+
+    currentPage = 1; // reset to first page
+    displayResults();
+    displayPagination();
+  }
+
+  function displayResults() {
+    const container = document.getElementById('results');
+    container.innerHTML = '';
+
+    if (filteredResults.length === 0) {
+      container.textContent = 'No matching episodes found.';
+      document.getElementById('pagination').innerHTML = '';
+      return;
     }
 
-    function populateFilters() {
-      const subjectSet = new Set();
-      const colorSet = new Set();
+    const start = (currentPage - 1) * resultsPerPage;
+    const end = start + resultsPerPage;
+    const currentPageResults = filteredResults.slice(start, end);
 
-      episodes.forEach(ep => {
-        ep.subject.split(',').forEach(s => {
-          const trimmed = s.trim();
-          if (trimmed) subjectSet.add(trimmed);
-        });
-        ep.colors.split(',').forEach(c => colorSet.add(c.trim()));
-      });
+    currentPageResults.forEach(ep => {
+      const div = document.createElement('div');
+      div.className = 'episode';
+      div.innerHTML = `
+        <h2>${ep.title} (Season ${ep.season}, Episode ${ep.episode})</h2>
+        <p><strong>Air Date:</strong> ${ep.air_date}</p>
+        <p><strong>Subjects:</strong> ${ep.subject}</p>
+        <p><strong>Colors:</strong> ${ep.colors}</p>
+        <img src="${ep.img_src}" width="300" loading="lazy" />
+        <p><a href="${ep.youtube_src}" target="_blank">Watch Episode</a></p>
+      `;
+      container.appendChild(div);
+    });
+  }
 
-      const subjectFilters = document.getElementById('subjectFilters');
-      const colorFilters = document.getElementById('colorFilters');
+  function displayPagination() {
+    const pagination = document.getElementById('pagination');
+    pagination.innerHTML = '';
 
-      [...subjectSet].sort().forEach(subject => {
-        const label = document.createElement('label');
-        label.innerHTML = `
-          <input type="checkbox" name="subject" value="${subject}" />
-          ${subject}
-        `;
-        subjectFilters.appendChild(label);
-      });
+    const totalPages = Math.ceil(filteredResults.length / resultsPerPage);
+    if (totalPages <= 1) return;
 
-      [...colorSet].sort().forEach(color => {
-        const label = document.createElement('label');
-        label.innerHTML = `
-          <input type="checkbox" name="color" value="${color}" />
-          ${color}
-        `;
-        colorFilters.appendChild(label);
-      });
-    }
+    const prevBtn = document.createElement('button');
+    prevBtn.textContent = 'Previous';
+    prevBtn.disabled = currentPage === 1;
+    prevBtn.onclick = () => {
+      currentPage--;
+      displayResults();
+      displayPagination();
+    };
 
-    function filterEpisodes() {
-      const titleQuery = document.getElementById('titleInput').value.toLowerCase();
+    const nextBtn = document.createElement('button');
+    nextBtn.textContent = 'Next';
+    nextBtn.disabled = currentPage === totalPages;
+    nextBtn.onclick = () => {
+      currentPage++;
+      displayResults();
+      displayPagination();
+    };
 
-      const selectedSubjects = Array.from(document.querySelectorAll('input[name="subject"]:checked')).map(cb => cb.value);
-      const selectedColors = Array.from(document.querySelectorAll('input[name="color"]:checked')).map(cb => cb.value);
+    pagination.appendChild(prevBtn);
+    pagination.appendChild(document.createTextNode(` Page ${currentPage} of ${totalPages} `));
+    pagination.appendChild(nextBtn);
+  }
 
-      const results = episodes.filter(ep => {
-        const matchTitle = !titleQuery || ep.title.toLowerCase().includes(titleQuery);
-        const matchSubject = selectedSubjects.length === 0 || selectedSubjects.some(s => ep.subject.includes(s));
-        const matchColor = selectedColors.length === 0 || selectedColors.some(c => ep.colors.includes(c));
-        return matchTitle && matchSubject && matchColor;
-      });
+  loadData();
+</script>
 
-      displayResults(results);
-    }
-
-    function displayResults(episodes) {
-      const container = document.getElementById('results');
-      container.innerHTML = '';
-
-      if (episodes.length === 0) {
-        container.textContent = 'No matching episodes found.';
-        return;
-      }
-
-      episodes.forEach(ep => {
-        const div = document.createElement('div');
-        div.className = 'episode';
-        div.innerHTML = `
-          <h2>${ep.title} (Season ${ep.season}, Episode ${ep.episode})</h2>
-          <p><strong>Air Date:</strong> ${ep.air_date}</p>
-          <p><strong>Subjects:</strong> ${ep.subject}</p>
-          <p><strong>Colors:</strong> ${ep.colors}</p>
-          <img src="${ep.img_src}" width="300" />
-          <p><a href="${ep.youtube_src}" target="_blank">Watch Episode</a></p>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    loadData();
-  </script>
 </body>
 </html>
