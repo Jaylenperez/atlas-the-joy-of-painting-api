@@ -8,13 +8,13 @@
 h1 {
     font-family: 'MyCustomFont', serif;
     color: #A41338;
-    font-size: 50px;
+    font-size: 70px;
     text-align: center;
 }
 
 body {
     font-family: Arial, sans-serif;
-    padding: 2rem;
+    padding: 1rem;
     color: #819263;
 }
 
