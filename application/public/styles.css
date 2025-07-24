@@ -1,0 +1,18 @@
+@font-face {
+    font-family: 'MyCustomFont'; /* Give your font a name you'll use in CSS */
+    src: url('fonts/Pinklatte.ttf') format('truetype'); /* Path to your font file and its format */
+    font-weight: normal; /* Or bold, semi-bold, etc., depending on your font */
+    font-style: normal; /* Or italic, oblique */
+    /* You can add more descriptors like font-display: swap; for better performance */
+}
+
+h1 {
+    font-family: 'MyCustomFont', serif; /* You can apply it to specific elements as well */
+    color: #A41338;
+    font-size: 50px;
+    text-align: center;
+}
+
+body {
+    color: #819263;
+}
